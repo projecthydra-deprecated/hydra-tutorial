@@ -692,7 +692,7 @@ class HydraTutorial < Thor
       gem 'hydra-head', :git => "git://github.com/projecthydra/hydra-head.git"
     else
       gem 'blacklight'
-      gem 'hydra-head', ">= 4.1.1"
+      gem 'hydra-head', ">= 5.0"
     end
     gem 'devise'
     run 'bundle install', :capture => false
@@ -703,7 +703,12 @@ class HydraTutorial < Thor
   def run_hydra_generators
     say %Q{
   These gems provide generators for adding basic views, styles, and override
-  points into your application. We'll run these generators now.\n}, STATEMENT
+  points into your application. 
+  
+  We'll run the generators now for you.  If you were to run these generators yourself, you would call
+    rails generate 'blacklight', '--devise'
+    rails generate 'hydra:head', 'User'\n\n}, STATEMENT
+    
     f = 'config/solr.yml'
     remove_file f
     generate 'blacklight', '--devise'
@@ -735,15 +740,14 @@ class HydraTutorial < Thor
   desc('add_access_rights: FIX', 'FIX')
   def add_access_rights
     say %Q{
-  We need to make a couple changes to our controller and model to make
-  them fully-compliant objects by teaching them about access rights.
-
-  We'll also update our controller to provide access controls on records.\n\n}, STATEMENT
+  One of the things that Hydra provides is access controls.  The Hydra generator sets up Blacklight's CatalogController (aka. search controller) to apply gated discovery for us, but its up to us to make our Record model and RecordsController enforce Hydra-based access controls as well.  First, we must tell the RecordsController to enforce access controls on the requests it receives.  We do this with a before_filter. 
+  
+  Then we set up both the controller and the model to automatically grant "edit" permissions to the object's depositor when the object is initially created.  If we didn't do this second step, depositors will be locked out of any objects they create!\n\n}, STATEMENT
 
     inject_into_class "app/controllers/records_controller.rb", 'RecordsController' do
-      "  include Hydra::AssetsControllerHelper\n"
+      "  before_filter :enforce_access_controls\n"
     end
-
+    
     insert_into_file "app/controllers/records_controller.rb", :after => "@record = Record.new(params[:record])\n" do
       "    apply_depositor_metadata(@record)\n"
     end
@@ -755,20 +759,17 @@ include Hydra::ModelMethods
       "
     end
 
-    insert_into_file "app/models/solr_document.rb", :after => "include Blacklight::Solr::Document\n" do
-      "
-include Hydra::Solr::Document
-      "
-    end
+# TODO: Is this necessary for 5.x? - MZ
+#     insert_into_file "app/models/solr_document.rb", :after => "include Blacklight::Solr::Document\n" do
+#       "
+# include Hydra::Solr::Document
+#       "
+#     end
 
-    insert_into_file "app/assets/javascripts/application.js", :after => "//= require_tree .\n" do
-      "Blacklight.do_search_context_behavior = function() { }\n"
-    end
-
-    inject_into_class "app/controllers/records_controller.rb", 'RecordsController' do
-      "  include Hydra::AccessControlsEnforcement\n" +
-      "  before_filter :enforce_access_controls\n"
-    end
+# TODO: Is this necessary for 5.x? - MZ
+#     insert_into_file "app/assets/javascripts/application.js", :after => "//= require_tree .\n" do
+#       "Blacklight.do_search_context_behavior = function() { }\n"
+#     end
 
     run_git('Modify controller and model to include access rights')
   end
@@ -792,11 +793,6 @@ include Hydra::Solr::Document
   And then check the search catalog:
 
       http://localhost:3000/catalog\n}, STATEMENT
-
-    # TODO: remove this monkey-patch fixing a bug in hydra-head.
-    f = `bundle show hydra-head`
-    f = "#{f.strip}/app/views/_user_util_links.html.erb"
-    gsub_file f, /.+folder_index_path.+/, ''
 
     rails_server('/records/new')
   end
