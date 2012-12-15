@@ -838,7 +838,7 @@ include Hydra::ModelMethods
     gem_group :development, :test do
       gem 'capybara'
     end
-    run 'bundle install', :cature => true
+    run 'bundle install', :capture => true
     run_git('Added capybara gem')
   end
 
@@ -846,7 +846,7 @@ include Hydra::ModelMethods
   def write_integration_test
     say %Q{
   Here's a quick integration test that proves deposit works.\n}, STATEMENT
-    copy_file 'integration_spec.rb', 'spec/integration/integration_spec.rb'
+    copy_file 'integration_spec.rb', 'spec/features/integration_spec.rb'
     run_git('Added an integration test')
   end
 
