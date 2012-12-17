@@ -740,12 +740,12 @@ class HydraTutorial < Thor
   desc('add_access_rights: FIX', 'FIX')
   def add_access_rights
     say %Q{
-  One of the things that Hydra provides is access controls.  The Hydra generator sets up Blacklight's CatalogController (aka. search controller) to apply gated discovery for us, but its up to us to make our Record model and RecordsController enforce Hydra-based access controls as well.  First, we must tell the RecordsController to enforce access controls on the requests it receives.  We do this with a before_filter. 
+  One of the things that Hydra provides is access controls.  The Hydra generator sets up Blacklight's CatalogController (aka. search controller) to apply gated discovery for us, but its up to us to make our Record model and RecordsController enforce Hydra-based access controls as well.  First, we must tell the RecordsController to enforce access controls on the requests it receives.  We do this using CanCan's controller actions.  The easiest of these is load_and_authorize_resource, which we can add to the top of our Controller.  For more info on enforcing Hydra-based access controls, see https://github.com/projecthydra/hydra-head/blob/master/hydra-access-controls/README.textile
   
-  Then we set up both the controller and the model to automatically grant "edit" permissions to the object's depositor when the object is initially created.  If we didn't do this second step, depositors will be locked out of any objects they create!\n\n}, STATEMENT
+  We also need to set up both the controller and the model to automatically grant "edit" permissions to the object's depositor when the object is initially created.  If we didn't do this, depositors will be locked out of any objects they create!\n\n}, STATEMENT
 
     inject_into_class "app/controllers/records_controller.rb", 'RecordsController' do
-      "  before_filter :enforce_access_controls\n"
+      "  load_and_authorize_resource\n"
     end
     
     insert_into_file "app/controllers/records_controller.rb", :after => "@record = Record.new(params[:record])\n" do
@@ -758,18 +758,6 @@ include Hydra::ModelMixins::CommonMetadata
 include Hydra::ModelMethods
       "
     end
-
-# TODO: Is this necessary for 5.x? - MZ
-#     insert_into_file "app/models/solr_document.rb", :after => "include Blacklight::Solr::Document\n" do
-#       "
-# include Hydra::Solr::Document
-#       "
-#     end
-
-# TODO: Is this necessary for 5.x? - MZ
-#     insert_into_file "app/assets/javascripts/application.js", :after => "//= require_tree .\n" do
-#       "Blacklight.do_search_context_behavior = function() { }\n"
-#     end
 
     run_git('Modify controller and model to include access rights')
   end
