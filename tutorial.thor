@@ -564,6 +564,12 @@ class HydraTutorial < Thor
     remove_file f
     remove_file 'app/controllers/catalog_controller.rb'
     generate 'hydra:head', 'User'
+    insert_into_file "config/jetty.yml", :after => "default:" do
+    %Q{ 
+  java_opts:
+    - "-XX:MaxPermSize=128m" 
+    - "-Xmx256m"}
+    end
     run_git('Ran blacklight and hydra-head generators')
   end
 
@@ -593,7 +599,7 @@ class HydraTutorial < Thor
     end
 
     insert_into_file "app/controllers/records_controller.rb", :after => "@record = Record.new(params[:record])\n" do
-      "    apply_depositor_metadata(@record)\n"
+      "    @record.apply_depositor_metadata(current_user.user_key)\n"
     end
 
     inject_into_class "app/models/record.rb", "Record" do
