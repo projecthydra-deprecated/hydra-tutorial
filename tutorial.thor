@@ -707,8 +707,11 @@ class HydraTutorial < Thor
   
   We'll run the generators now for you.  If you were to run these generators yourself, you would call
     rails generate 'blacklight', '--devise'
-    rails generate 'hydra:head', 'User'\n\n}, STATEMENT
+    rails generate 'hydra:head', 'User'
     
+  Note: We have to stop jetty before running this step.  We will restart it when you need it again.\n\n}, STATEMENT
+    
+    rake 'jetty:stop'
     f = 'config/solr.yml'
     remove_file f
     generate 'blacklight', '--devise'
@@ -746,6 +749,7 @@ class HydraTutorial < Thor
 
     inject_into_class "app/controllers/records_controller.rb", 'RecordsController' do
       "  load_and_authorize_resource\n"
+      "  skip_authorize_resource :only => :new\n"
     end
     
     insert_into_file "app/controllers/records_controller.rb", :after => "@record = Record.new(params[:record])\n" do
