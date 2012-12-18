@@ -557,6 +557,7 @@ class HydraTutorial < Thor
   desc('run_hydra_generators: FIX', 'FIX')
   def run_hydra_generators
     say user_message, STATEMENT
+    rake 'jetty:stop'
     f = 'config/solr.yml'
     remove_file f
     generate 'blacklight', '--devise'
