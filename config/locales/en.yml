@@ -285,7 +285,14 @@ en:
 
     run_hydra_generators:
          These gems provide generators for adding basic views, styles, and override
-         points into your application. We'll run these generators now.
+         points into your application. 
+         
+         We'll run the generators now for you.  If you were to run these generators yourself, you would call
+             rails generate 'blacklight', '--devise'
+             rails generate 'hydra:head', 'User'
+
+        Note: We have to stop jetty before running this step.  We will restart it when you need it again.\n\n}, STATEMENT
+         
 
     db_migrate:
          Blacklight uses a SQL database for keeping track of user bookmarks,
