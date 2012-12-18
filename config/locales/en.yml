@@ -301,11 +301,10 @@ en:
     hydra_jetty_config:
          Hydra provides some configuration for Solr and Fedora. We will use them.
 
-    add_access_rights:
-         We need to make a couple changes to our controller and model to make
-         them fully-compliant objects by teaching them about access rights.
+    add_access_rights: |+
+         One of the things that Hydra provides is access controls.  The Hydra generator sets up Blacklight's CatalogController (aka. search controller) to apply gated discovery for us, but its up to us to make our Record model and RecordsController enforce Hydra-based access controls as well.  First, we must tell the RecordsController to enforce access controls on the requests it receives.  We do this using CanCan's controller actions.  The easiest of these is load_and_authorize_resource, which we can add to the top of our Controller.  For more info on enforcing Hydra-based access controls, see https://github.com/projecthydra/hydra-head/blob/master/hydra-access-controls/README.textile
 
-         We'll also update our controller to provide access controls on records.
+         We also need to set up both the controller and the model to automatically grant "edit" permissions to the object's depositor when the object is initially created.  If we didn't do this, depositors will be locked out of any objects they create!
 
     check_catalog: |+
          Blacklight and Hydra-Head have added some new functionality to the
@@ -333,7 +332,7 @@ en:
     write_controller_test:
          Here's a quick example of a test.
 
-    install_capybara:
+    install_capybara: |+
          We also want to write integration tests to test the end-result that
          a user may see. We'll add the capybara gem to do that.
          

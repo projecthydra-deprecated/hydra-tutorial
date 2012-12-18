@@ -586,9 +586,11 @@ class HydraTutorial < Thor
   desc('add_access_rights: FIX', 'FIX')
   def add_access_rights
     say user_message, STATEMENT
-    # inject_into_class "app/controllers/records_controller.rb", 'RecordsController' do
-    #   "  include Hydra::AssetsControllerHelper\n"
-    # end
+    
+    inject_into_class "app/controllers/records_controller.rb", 'RecordsController' do
+      "  load_and_authorize_resource\n"
+      "  skip_authorize_resource :only => :new\n"
+    end
 
     insert_into_file "app/controllers/records_controller.rb", :after => "@record = Record.new(params[:record])\n" do
       "    apply_depositor_metadata(@record)\n"
@@ -596,24 +598,9 @@ class HydraTutorial < Thor
 
     inject_into_class "app/models/record.rb", "Record" do
       "
-include Hydra::ModelMixins::CommonMetadata
-include Hydra::ModelMethods
+          include Hydra::ModelMixins::CommonMetadata
+          include Hydra::ModelMethods
       "
-    end
-
-    insert_into_file "app/models/solr_document.rb", :after => "include Blacklight::Solr::Document\n" do
-      "
-include Hydra::Solr::Document
-      "
-    end
-
-    insert_into_file "app/assets/javascripts/application.js", :after => "//= require_tree .\n" do
-      "Blacklight.do_search_context_behavior = function() { }\n"
-    end
-
-    inject_into_class "app/controllers/records_controller.rb", 'RecordsController' do
-      "  include Hydra::AccessControlsEnforcement\n" +
-      "  before_filter :enforce_access_controls\n"
     end
 
     run_git('Modify controller and model to include access rights')
