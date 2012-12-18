@@ -671,7 +671,7 @@ include Hydra::Solr::Document
   desc('write_integration_test: FIX', 'FIX')
   def write_integration_test
     say user_message, STATEMENT
-    copy_file 'integration_spec.rb', 'spec/integration/integration_spec.rb'
+    copy_file 'integration_spec.rb', 'spec/features/integration_spec.rb'
     run_git('Added an integration test')
   end
 

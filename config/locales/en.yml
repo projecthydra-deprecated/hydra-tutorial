@@ -336,6 +336,8 @@ en:
     install_capybara:
          We also want to write integration tests to test the end-result that
          a user may see. We'll add the capybara gem to do that.
+         
+         Note: As of capybara 2.0, you need to put integration tests into the spec/features directory.
 
     write_integration_test:
          Here's a quick integration test that proves deposit works.
