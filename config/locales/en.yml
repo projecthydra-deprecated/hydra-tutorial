@@ -283,7 +283,7 @@ en:
            - devise is a standard Ruby gem for providing user-related
              functions, like registration, sign-in, etc.
 
-    run_hydra_generators:
+    run_hydra_generators: |+
          These gems provide generators for adding basic views, styles, and override
          points into your application. 
          
@@ -291,7 +291,7 @@ en:
              rails generate 'blacklight', '--devise'
              rails generate 'hydra:head', 'User'
 
-        Note: We have to stop jetty before running this step.  We will restart it when you need it again.\n\n}, STATEMENT
+         Note: We have to stop jetty before running this step.  We will restart it when you need it again.\n\n}, STATEMENT
          
 
     db_migrate:
@@ -301,7 +301,7 @@ en:
     hydra_jetty_config:
          Hydra provides some configuration for Solr and Fedora. We will use them.
 
-    add_access_rights:
+    add_access_rights: |+
          We need to make a couple changes to our controller and model to make
          them fully-compliant objects by teaching them about access rights.
 
@@ -333,7 +333,7 @@ en:
     write_controller_test:
          Here's a quick example of a test.
 
-    install_capybara:
+    install_capybara: |+
          We also want to write integration tests to test the end-result that
          a user may see. We'll add the capybara gem to do that.
          
