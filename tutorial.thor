@@ -564,12 +564,11 @@ class HydraTutorial < Thor
     remove_file f
     remove_file 'app/controllers/catalog_controller.rb'
     generate 'hydra:head', 'User'
-    insert_into_file "config/jetty.yml", :after => "default:" do
-    %Q{ 
-  java_opts:
-    - "-XX:MaxPermSize=128m" 
-    - "-Xmx256m"}
-    end
+    
+    # Forcing the correct jetty.yml -- this should actually be done by the hydra generator, but it's missing from 5.0.0
+    remove_file "config/jetty.yml"
+    copy_file "jetty.yml", "config/jetty.yml"
+
     run_git('Ran blacklight and hydra-head generators')
   end
 

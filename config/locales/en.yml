@@ -291,7 +291,7 @@ en:
              rails generate 'blacklight', '--devise'
              rails generate 'hydra:head', 'User'
 
-         Note: We have to stop jetty before running this step.  We will restart it when you need it again.\n\n}, STATEMENT
+         Note: We have to stop jetty before running this step.  We will restart it when you need it again.
          
 
     db_migrate:
