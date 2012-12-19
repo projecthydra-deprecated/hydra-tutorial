@@ -1,3 +1,20 @@
+# 
+# Important Notice
+#
+
+**This tutorial is currently BROKEN**
+
+**We are in the process of updating the tutorial to work with hydra-head 5, which was released December 17 2012.** 
+
+Some of the improvements built into the next release:
+
+* compatibility with hydra-head 5.x
+* compatibility with Capybara 2.x (this will make the "integration" tests work again)
+* fixes to make jetty run more smoothly
+* updates to instructions about how to use CanCan for access controls
+
+The new version will be out before January 1st 2013.  
+
 # Hydra Tutorial Application
 
 The tutorial will:
