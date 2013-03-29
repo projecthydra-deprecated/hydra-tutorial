@@ -329,7 +329,8 @@ class HydraTutorial < Thor
     say %Q{
   We're going to install some prerequisite gems in order to create our
   skeleton Rails application.\n}, STATEMENT
-    run 'gem install bundler rails', :capture => false
+    run 'gem install bundler', :capture => false
+    run 'gem install rails -v "~>3.2"', :capture => false
   end
 
   desc('new_rails_app: FIX', 'FIX')
@@ -404,7 +405,7 @@ class HydraTutorial < Thor
   We'll download it now and put a copy into your application's directory.
   This might take awhile.\n}, STATEMENT
     unless File.exists? '../jetty'
-      git :clone => '-b 4.x git://github.com/projecthydra/hydra-jetty.git ../jetty'
+      git :clone => '-b new-solr-schema git://github.com/projecthydra/hydra-jetty.git ../jetty'
     end
     unless File.exists? 'jetty'
       run 'cp -R ../jetty jetty'
@@ -427,7 +428,7 @@ class HydraTutorial < Thor
   and stop Jetty.\n}, STATEMENT
 
     gem_group :development, :test do
-      gem 'jettywrapper'
+      gem 'jettywrapper', '~> 1.4.0'
     end
     run 'bundle install', :capture => false
     run_git('Solr and Fedora configuration')
@@ -470,8 +471,8 @@ class HydraTutorial < Thor
   The om gem provides mechanisms for mapping XML documents into Ruby.
 
   We'll add both of these to the Gemfile.\n\n}, STATEMENT
-    gem 'active-fedora'
-    gem 'om'
+    gem 'active-fedora', '~> 6.0'
+    gem 'om', '~> 2.0'
     run 'bundle install', :capture => false
     run_git('Added gems: active-fedora and om')
   end
@@ -692,7 +693,7 @@ class HydraTutorial < Thor
       gem 'hydra-head', :git => "git://github.com/projecthydra/hydra-head.git"
     else
       gem 'blacklight'
-      gem 'hydra-head', ">= 5.0"
+      gem 'hydra-head', ">= 6.0"
     end
     gem 'devise'
     run 'bundle install', :capture => false
@@ -753,7 +754,7 @@ class HydraTutorial < Thor
     end
     
     insert_into_file "app/controllers/records_controller.rb", :after => "@record = Record.new(params[:record])\n" do
-      "    apply_depositor_metadata(@record)\n"
+      "    @record.apply_depositor_metadata(current_user)\n"
     end
 
     inject_into_class "app/models/record.rb", "Record" do
@@ -923,9 +924,22 @@ end
       "    include Hydra::Controller::UploadBehavior\n"
     end
     insert_into_file "app/controllers/records_controller.rb", :after => "apply_depositor_metadata(@record)\n" do
-      "    @record.label = params[:record][:title] # this is a bad hack to work around an AF bug\n" +
-      "    add_posted_blob_to_asset(@record, params[:filedata]) if params.has_key?(:filedata)\n"
+      <<-eos
+      if params.has_key?(:filedata)
+        file = params[:filedata] # An instance of Rack::Multipart::UploadedFile
+
+        file_asset = FileAsset.new
+        file_asset.add_file_datastream(file, :label=>file.original_filename, :mimeType=>file.content_type, :dsid=>'content')
+        #the model instance (extending ActiveFedora::Base) you want to attach the file to.
+        file_asset.container = @record
+      end
+      eos
     end
+
+    insert_into_file "app/controllers/records_controller.rb", :after => "if @record.save" do
+      " and (file_asset and file_asset.save)"
+    end
+    
     run_git('Add file uploads to controller')
   end
 
