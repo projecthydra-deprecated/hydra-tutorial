@@ -1,12 +1,12 @@
-# 
-# Important Notice
-#
+# NOTICE: THIS PROJECT IS DEPRECATED
 
-**DO NOT USE THIS TUTORIAL**
+#### This project, and all others in [projecthydra-deprecated](http://github.com/projecthydra-deprecated), have been deprecated and are no longer actively maintained by the Hydra Project developer community. See the Hydra Project's main Github page at [projecthydra](http://github.com/projecthydra/) for projects that are actively maintained.
 
-**This tutorial is currently BROKEN.**  Use the new [Dive into Hydra](https://github.com/projecthydra/hydra-head/wiki/Dive-into-Hydra) tutorial, which is always kept up to date.
+If you want a more up to date tutorial, see [Dive into Hydra](https://github.com/projecthydra/hydra-head/wiki/Dive-into-Hydra)
 
+_Original README is below_
 
+--------------------------
 
 # Hydra Tutorial Application
 
